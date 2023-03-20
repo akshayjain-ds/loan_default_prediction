@@ -9,3 +9,5 @@ lightgbm
 catboost
 shap
 seaborn
+jupyter
+category_encoders
