@@ -9,7 +9,7 @@ The purpose of this engine is to predict the likelihood of an incoming laon/cred
  'personal_status', 'other_debtors', 'residence_history', 'property',
  'age', 'installment_plan', 'housing', 'existing_credits',
  'dependents', 'foreign_worker', 'job']. 
-2. ['gender'] is not used as a feature to avoid any discrimination in our decision making and to make our AI application fair
+2. ['gender'] is not used as a feature to avoid any discrimination in our decisioning process and to keep our AI application fair
 3. ['telephone'] is kind of an id variable, so ignored from analysis
 
 ## Exploratory Data Analysis
@@ -18,9 +18,26 @@ EDA is done on all features in oder to:
 2. see the relationship between input features and target variable
 
 ## Transformations and Feature Engineering
-1. Transfomed ['residence_history', 'credit_history'] features into months
-2. Applied target encodings on all categorical features
-3. Kept the remaining numerical features as it is
+1. Transformed ['residence_history', 'credit_history'] features into number of months
+2. Applied target encodings on all categorical features: ['credit_history',
+  'purpose',
+  'personal_status',
+  'other_debtors',
+  'property',
+  'installment_plan',
+  'housing',
+  'foreign_worker',
+  'job']
+3. Kept the remaining numerical features as it is: ['checking_balance',
+  'months_loan_duration',
+  'amount',
+  'savings_balance',
+  'employment_length_months',
+  'residence_history_months',
+  'installment_rate',
+  'age',
+  'existing_credits',
+  'dependents']
 
 ## Model
 1. Lot of missing values in numeric features, but tree based models like xgboost, catboost and lightgbm can handle it pretty well  
@@ -34,14 +51,21 @@ that can be deployed in production for real time scoring
 
 All the relevant artefacts are present in ./artefacts directory
 
-## Decisions
-Based on precision-recall analysis on the predicted score, for each application, the decision is divided into 1 of the 3 categories:
-1. 'reject': high chance of being a defaulter if application approved, reject the application automatically due to high risk. A rejection reason is also added along with the decision in order to see why the application is risky
-2. 'mkyc': medium chance of being a defaulter if application approved, route the application to a loan analyst for further investigation
+## Business Decisions
+Based on precision-recall and roc analysis of the predicted risk score, for each application, the decision is divided into 1 of the 3 categories:
+1. 'reject': high chance of being a defaulter if application is approved, reject the application automatically due to high risk. A rejection reason is also added (in the form of most contributing feature name) along with the decision in order to see why the application is risky
+2. 'mkyc': medium chance of being a defaulter if application is approved, route the application to a loan analyst for further investigation
 3. 'approved': low chance of being a defaulter if application approved, can be approved automatically with almost no default risk
 
+## Business Impact
+If we get 1000 loan applications on a daily basis:
+1. ~125 applications will be rejected with a much higher risk of 84% compared to 30% default risk (in case of no ML model)
+2. ~355 applications will be auto approved with a much lower risk of 1.5% only compared to 30% default risk (in case of no ML model)
+3. remaining 520 (almost half) applications will be going for a manual review
+Note, based on risk appetite of the business, the number of applications going to either reject, mkyc, approved is customizable by changing the thresholds
+
 ## Run
-Open the  Pycharm run configuration and make the following changes:
+Open the Pycharm run configuration and make the following changes:
 
 1. Configure the venv interpreter for the project
 1. install requirements.txt
